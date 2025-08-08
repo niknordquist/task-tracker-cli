@@ -1,12 +1,19 @@
 from datetime import datetime
-import os
+import json
 
 totalTasks = 0
         
 def add(description):
     with open("todo.json", "w") as file:
         try:
-            file.write(f'{totalTasks + 1},{description},{datetime.now()},{datetime.now()}')
+            data = {
+                'id': totalTasks + 1,
+                'description': description,
+                'status': "Todo",
+                'createdAt': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                'updatedAt': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            }
+            json.dump(data, file)
         except Exception as e:
             print(f'Failed to create new task. Error: {e}')
         
