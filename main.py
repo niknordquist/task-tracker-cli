@@ -29,7 +29,6 @@ def add(description):
             print(f'Failed to create new task. Error: {e}')
             
 def delete(id):
-    global totalTasks
     with open("todo.json", "r+") as file:
         try:
             tasks_file = json.load(file)
@@ -42,7 +41,20 @@ def delete(id):
             print(f'Failed to delete task with id {id}: {e}')
 
 def update(id, description):
-    pass
+    with open("todo.json", "r+") as file:
+        try:
+            tasks_file = json.load(file)
+            file.seek(0)
+            for task in tasks_file:
+                if task["id"] == id:
+                    task["description"] = description
+                    json.dump(tasks_file, file)
+                    file.truncate()
+                    print(f'Updated task with ID {id}!')
+                    return
+            print(f'Could not find task with ID {id}')
+        except Exception as e:
+            print(f'Failed to delete task with id {id}: {e}')
 
 def mark_in_progress(id):
     pass
@@ -64,21 +76,20 @@ def main():
     while endTrigger == False:
         try:
             userInput = input("Enter a command (Press 'q' to quit): ")
-            currentCommand = userInput.split()
-            if len(currentCommand) > 2: raise IndexError
-            match currentCommand[0]:
+            command = userInput.split(maxsplit=1)[0]
+            match command:
                 case "add":
-                    add(currentCommand[1])
+                    add(userInput.split(maxsplit=1)[1])
                 case "delete":
-                    delete(int(currentCommand[1]))
+                    delete(int(userInput.split(maxsplit=1)[1]))
                 case "update":
-                    update(int(currentCommand[1]), currentCommand[2])
+                    update(int(userInput.split(maxsplit=2)[1]), userInput.split(maxsplit=2)[2])
                 case "mark-in-progress":
-                    mark_in_progress(int(currentCommand[1]))
+                    mark_in_progress(int(userInput.split(maxsplit=1)[1]))
                 case "mark-done":
-                    mark_done(int(currentCommand[1]))
+                    mark_done(int(userInput.split(maxsplit=1)[1]))
                 case "list":
-                    list_tasks() if len(currentCommand) < 2 else list_tasks(currentCommand[1])
+                    pass
                 case 'q':
                     endTrigger = True
                 case _:
